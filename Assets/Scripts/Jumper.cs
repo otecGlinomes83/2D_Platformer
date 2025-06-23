@@ -36,7 +36,7 @@ public class Jumper : MonoBehaviour
         }
     }
 
-    private void OnDrawGizmosSelected()
+    private void OnDrawGizmos()
     {
         Gizmos.color = Color.yellow;
         Gizmos.DrawWireSphere(_feetPosition.position, _checkRadius);
