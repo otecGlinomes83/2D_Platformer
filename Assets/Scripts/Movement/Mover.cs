@@ -1,38 +1,33 @@
 using UnityEngine;
 
-[RequireComponent(typeof(SpriteRenderer))]
 public class Mover : MonoBehaviour
 {
-    [SerializeField] private Animator _animator;
-
     [SerializeField] private float _maxSpeed = 6f;
-    [SerializeField] private float _acceleration = 0.05f;
+    [SerializeField] private float _acceleration = 0.1f;
 
-    private SpriteRenderer _spriteRenderer;
-
+    private float _directionArrivalThreshold = 0.01f;
     private float _currentSpeed = 0;
+
+    private float _startScaleX;
+
+    private bool _isLookingLeft = false;
+
+    public bool IsRunning { get; private set; }
 
     private void Awake()
     {
-        _spriteRenderer = GetComponent<SpriteRenderer>();
+        _startScaleX = transform.localScale.x;
     }
 
     private void Update()
     {
-        if (_currentSpeed > 0)
+        if (_currentSpeed != 0)
         {
-            _animator.SetBool("IsRunning", true);
-            return;
-        }
-        else if (_currentSpeed < 0)
-        {
-            _spriteRenderer.flipX = true;
-            _animator.SetBool("IsRunning", true);
+            IsRunning = true;
             return;
         }
 
-        _spriteRenderer.flipX = false;
-        _animator.SetBool("IsRunning", false);
+        IsRunning = false;
     }
 
     public void Move(Vector2 direction)
@@ -42,5 +37,19 @@ public class Mover : MonoBehaviour
         _currentSpeed = Mathf.MoveTowards(_currentSpeed, targetSpeed, _acceleration);
 
         transform.Translate(Vector2.right * _currentSpeed * Time.deltaTime);
+
+        if (direction.x < -_directionArrivalThreshold)
+        {
+            if (_isLookingLeft == false)
+            {
+                transform.localScale = new Vector2(-_startScaleX, transform.localScale.y);
+                _isLookingLeft = true;
+            }
+        }
+        else if (direction.x > _directionArrivalThreshold)
+        {
+            transform.localScale = new Vector2(_startScaleX, transform.localScale.y);
+            _isLookingLeft = false;
+        }
     }
 }

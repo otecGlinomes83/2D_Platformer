@@ -7,7 +7,7 @@ public class CoinSpawner : MonoBehaviour
     [SerializeField] private Coin _coinPrefab;
     [SerializeField] private CoinsCollector _playerCoinCollector;
 
-    [SerializeField] private float _spawnRate = 5;
+    [SerializeField] private float _spawnRate = 5f;
 
     private CoinPusher _coinPusher = new CoinPusher();
 

@@ -2,7 +2,8 @@ using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(CapsuleCollider2D))]
 [RequireComponent(typeof(Mover), typeof(Jumper))]
-public class MobileEntity : MonoBehaviour
+[RequireComponent(typeof(CharacterAnimator))]
+public class Creature : MonoBehaviour
 {
     protected Jumper Jumper;
     protected Mover Mover;

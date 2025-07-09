@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 
 [RequireComponent(typeof(CoinsCollector))]
-public class Player : MobileEntity
+public class Player : Creature
 {
     private CoinsCollector _coinsCollector;
     private PlayerInput _playerInput;
