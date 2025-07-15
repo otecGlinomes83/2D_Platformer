@@ -1,21 +1,16 @@
 using UnityEngine;
 using System.Collections;
 
-[RequireComponent(typeof(Mover))]
 public class Patroller : MonoBehaviour
 {
     [SerializeField] private Transform[] _wayPoints;
 
-    private Mover _mover;
+    [SerializeField] private Mover _mover;
 
     private int _currentWayPointIndex = 0;
 
     private float _waypointArrivalThreshold = 0.2f;
-
-    private void Awake()
-    {
-        _mover = GetComponent<Mover>();
-    }
+    private float _switchDelay = 1f;
 
     private void Start()
     {
@@ -26,9 +21,10 @@ public class Patroller : MonoBehaviour
     {
         while (enabled)
         {
-            if (Mathf.Abs(transform.position.x - _wayPoints[_currentWayPointIndex].position.x) <= _waypointArrivalThreshold)
+            if (Mathf.Abs(_wayPoints[_currentWayPointIndex].position.x - transform.position.x) <= _waypointArrivalThreshold)
             {
                 SwitchWayPoint();
+                yield return new WaitForSecondsRealtime(_switchDelay);
             }
 
             _mover.Move(GetDirection());
@@ -37,15 +33,9 @@ public class Patroller : MonoBehaviour
         }
     }
 
-    private Vector2 GetDirection()
-    {
-        float deltaX = _wayPoints[_currentWayPointIndex].position.x - transform.position.x;
+    private Vector2 GetDirection() =>
+         (_wayPoints[_currentWayPointIndex].position - transform.position).normalized;
 
-        return new Vector2(Mathf.Sign(deltaX), 0);
-    }
-
-    private void SwitchWayPoint()
-    {
-        _currentWayPointIndex = (_currentWayPointIndex + 1) % _wayPoints.Length;
-    }
+    private void SwitchWayPoint() =>
+        _currentWayPointIndex = ++_currentWayPointIndex % _wayPoints.Length;
 }

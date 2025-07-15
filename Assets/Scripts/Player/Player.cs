@@ -1,19 +1,19 @@
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
 
-[RequireComponent(typeof(CoinsCollector))]
-public class Player : Creature
+public class Player : MonoBehaviour
 {
-    private CoinsCollector _coinsCollector;
+    [SerializeField] private Mover _mover;
+    [SerializeField] private Jumper _jumper;
+    [SerializeField] private CoinCollector _coinsCollector;
+    [SerializeField] private Rotator _rotator;
+
     private PlayerInput _playerInput;
 
     private List<Coin> _coins = new List<Coin>();
 
-    protected override void Awake()
+    private void Awake()
     {
-        base.Awake();
-
-        _coinsCollector = GetComponent<CoinsCollector>();
         _playerInput = new PlayerInput();
     }
 
@@ -32,17 +32,17 @@ public class Player : Creature
     private void Update()
     {
         if (_playerInput.Player.Jump.triggered)
-            Jumper.Jump();
-
+            _jumper.Jump();
 
         Vector2 direction = new Vector2(_playerInput.Player.Move.ReadValue<float>(), 0);
 
-        Mover.Move(direction);
+        _mover.Move(direction);
     }
 
     private void AddCoin(Coin coin)
     {
         _coins.Add(coin);
+
         Debug.Log($"Собрана монетка! Всего:{_coins.Count}");
     }
 }

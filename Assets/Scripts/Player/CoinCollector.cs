@@ -1,33 +1,26 @@
 using System;
 using UnityEngine;
 
-public class CoinsCollector : MonoBehaviour
+[RequireComponent(typeof(CircleCollider2D))]
+public class CoinCollector : MonoBehaviour
 {
     [SerializeField] private float _checkRadius = 1;
 
-    [SerializeField] private Transform _collectorPosition;
+    private CircleCollider2D _collectZone;
 
     public event Action<Coin> CoinCollected;
 
-    private void Update()
+    private void Awake()
     {
-        Collider2D[] hits = Physics2D.OverlapCircleAll(_collectorPosition.position, _checkRadius);
+        _collectZone = GetComponent<CircleCollider2D>();
 
-        for (int i = 0; i < hits.Length; i++)
-        {
-            if (hits[i].TryGetComponent(out Coin coin))
-            {
-                CoinCollected?.Invoke(coin);
-                Destroy(coin.gameObject);
-            }
-        }
+        _collectZone.isTrigger = true;
+        _collectZone.radius = _checkRadius;
     }
 
-    private void OnDrawGizmos()
+    private void OnTriggerEnter2D(Collider2D collision)
     {
-        Gizmos.color = Color.green;
-
-        if (_collectorPosition != null)
-            Gizmos.DrawWireSphere(_collectorPosition.position, _checkRadius);
+        if (collision.gameObject.TryGetComponent(out Coin coin))
+            CoinCollected?.Invoke(coin);
     }
 }
