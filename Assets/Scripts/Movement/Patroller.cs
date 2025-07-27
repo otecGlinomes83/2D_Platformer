@@ -7,6 +7,8 @@ public class Patroller : MonoBehaviour
 
     [SerializeField] private Mover _mover;
 
+    private Coroutine _patrollCoroutine;
+
     private int _currentWayPointIndex = 0;
 
     private float _waypointArrivalThreshold = 0.2f;
@@ -14,7 +16,24 @@ public class Patroller : MonoBehaviour
 
     private void Start()
     {
-        StartCoroutine(MoveToWayPoints());
+        TryStartPatrolling();
+    }
+
+    public void TryStartPatrolling()
+    {
+        if (_patrollCoroutine == null)
+        {
+            _patrollCoroutine = StartCoroutine(MoveToWayPoints());
+        }
+    }
+
+    public void TryStopPatrolling()
+    {
+        if (_patrollCoroutine != null)
+        {
+            StopCoroutine(_patrollCoroutine);
+            _patrollCoroutine = null;
+        }
     }
 
     private IEnumerator MoveToWayPoints()

@@ -1,62 +1,41 @@
-using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(BoxCollider2D))]
+[RequireComponent(typeof(Mover))]
 public class Follower : MonoBehaviour
 {
     [SerializeField] private Transform _target;
-    [SerializeField] private Mover _mover;
 
+    private Mover _mover;
     private BoxCollider2D _unfollowZone;
 
-    private Coroutine _moveCoroutine;
+    private bool _isAbleToMove = true;
 
     private void Awake()
     {
+        _mover = GetComponent<Mover>();
         _unfollowZone = GetComponent<BoxCollider2D>();
-
         _unfollowZone.isTrigger = true;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.TryGetComponent<Player>(out _))
-        {
-            TryStopMoveToPlayer();
-        }
+            _isAbleToMove = false;
     }
+
     private void OnTriggerExit2D(Collider2D collision)
     {
         if (collision.TryGetComponent<Player>(out _))
-        {
-            StartMoveToPlayer();
-        }
+            _isAbleToMove = true;
     }
 
-    private void StartMoveToPlayer()
+    private void LateUpdate()
     {
-        if (gameObject.activeInHierarchy)
+        if (_isAbleToMove)
         {
-            TryStopMoveToPlayer();
-            _moveCoroutine = StartCoroutine(MoveToPlayer());
-        }
-    }
-
-    private IEnumerator MoveToPlayer()
-    {
-        while (enabled)
-        {
-            Vector2 direction = _target.position - transform.position;
-
+            Vector2 direction = _target.transform.position - transform.position;
             _mover.Move(direction);
-
-            yield return null;
         }
-    }
-
-    private void TryStopMoveToPlayer()
-    {
-        if (_moveCoroutine != null)
-            StopCoroutine(_moveCoroutine);
     }
 }

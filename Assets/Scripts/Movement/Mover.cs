@@ -15,7 +15,9 @@ public class Mover : MonoBehaviour
 
     public void Move(Vector2 direction)
     {
-        if (Mathf.Abs(direction.x) < _directionArrivalThreshold)
+        direction = direction.normalized;
+
+        if (direction.magnitude < _directionArrivalThreshold)
         {
             IsRunning = false;
             _currentSpeed = 0f;
@@ -27,7 +29,7 @@ public class Mover : MonoBehaviour
             IsRunning = true;
             DirectionChanged?.Invoke(direction);
 
-            _currentSpeed = Mathf.MoveTowards(_currentSpeed, _maxSpeed, _acceleration);
+            _currentSpeed = Mathf.MoveTowards(_currentSpeed, _maxSpeed, _acceleration * Time.deltaTime);
 
             transform.Translate(direction * _currentSpeed * Time.deltaTime, Space.World);
         }

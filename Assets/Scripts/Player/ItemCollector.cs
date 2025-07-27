@@ -2,13 +2,13 @@ using System;
 using UnityEngine;
 
 [RequireComponent(typeof(CircleCollider2D))]
-public class CoinCollector : MonoBehaviour
+public class ItemCollector : MonoBehaviour
 {
     [SerializeField] private float _checkRadius = 1;
 
     private CircleCollider2D _collectZone;
 
-    public event Action<Coin> CoinCollected;
+    public event Action<Item> ItemCollected;
 
     private void Awake()
     {
@@ -20,7 +20,7 @@ public class CoinCollector : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.TryGetComponent(out Coin coin))
-            CoinCollected?.Invoke(coin);
+        if (collision.gameObject.TryGetComponent(out Item coin))
+            ItemCollected?.Invoke(coin);
     }
 }

@@ -1,23 +1,24 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class CoinSpawner : MonoBehaviour
+[RequireComponent(typeof(ItemPusher))]
+public class ItemSpawner : MonoBehaviour
 {
-    [SerializeField] private Coin _coinPrefab;
-    [SerializeField] private CoinCollector _playerCoinCollector;
+    [SerializeField] private Item _itemPrefab;
 
     [SerializeField] private float _spawnRate = 5f;
+    [SerializeField] private ItemCollector _itemCollector;
+
+    private ItemPusher _itemPusher;
 
     private Coroutine _spawnCoroutine;
     private WaitForSecondsRealtime _spawnDelay;
 
-    private CoinPusher _coinPusher = new CoinPusher();
-
-    private Coin _coin;
+    private Item _item;
 
     private void Awake()
     {
+        _itemPusher = GetComponent<ItemPusher>();
         _spawnDelay = new WaitForSecondsRealtime(_spawnRate);
     }
 
@@ -28,12 +29,12 @@ public class CoinSpawner : MonoBehaviour
 
     private void OnEnable()
     {
-        _playerCoinCollector.CoinCollected += DeactivateCoin;
+        _itemCollector.ItemCollected += DeactivateItem;
     }
 
     private void OnDisable()
     {
-        _playerCoinCollector.CoinCollected -= DeactivateCoin;
+        _itemCollector.ItemCollected -= DeactivateItem;
         StopSpawning();
     }
 
@@ -56,28 +57,28 @@ public class CoinSpawner : MonoBehaviour
     {
         yield return _spawnDelay;
 
-        ActivateCoin();
+        ActivateItem();
 
         yield break;
     }
 
-    private void ActivateCoin()
+    private void ActivateItem()
     {
-        if (_coin == null)
+        if (_item == null)
         {
-            _coin = Instantiate(_coinPrefab, transform);
+            _item = Instantiate(_itemPrefab, transform);
         }
 
-        _coin.gameObject.SetActive(true);
-        _coin.transform.position = transform.position;
-        _coinPusher.Push(_coin);
+        _item.gameObject.SetActive(true);
+        _item.transform.position = transform.position;
+        _itemPusher.Push(_item);
     }
 
-    private void DeactivateCoin(Coin coin)
+    private void DeactivateItem(Item item)
     {
-        if (_coin == coin)
+        if (item == _item)
         {
-            _coin.gameObject.SetActive(false);
+            _item.gameObject.SetActive(false);
             StartRespawnDelayed();
         }
     }
