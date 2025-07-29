@@ -1,23 +1,23 @@
 using System.Collections;
 using UnityEngine;
 
-[RequireComponent(typeof(DamageAblerDetector), typeof(TargetPusher))]
+[RequireComponent(typeof(DamageAblerDetector), typeof(Pusher))]
 public class Attacker : MonoBehaviour
 {
     [SerializeField] private float _damage = 5f;
     [SerializeField] private float _attackCooldown = 1f;
 
     private DamageAblerDetector _targetDetector;
-    private TargetPusher _targetPusher;
+    private Pusher _targetPusher;
 
-    private DamageAbler _target;
+    private Health _target;
 
     private Coroutine _attackCoroutine;
 
     private void Awake()
     {
         _targetDetector = GetComponent<DamageAblerDetector>();
-        _targetPusher = GetComponent<TargetPusher>();
+        _targetPusher = GetComponent<Pusher>();
     }
 
     private void OnEnable()
@@ -33,7 +33,7 @@ public class Attacker : MonoBehaviour
 
     }
 
-    private void TryStartAttack(DamageAbler target)
+    private void TryStartAttack(Health target)
     {
         if (_attackCoroutine == null)
         {
@@ -68,6 +68,6 @@ public class Attacker : MonoBehaviour
     private void Attack()
     {
         _target.TakeDamage(_damage);
-        _targetPusher.PushTarget(_target.Rigidbody);
+        _targetPusher.Push(_target.Rigidbody);
     }
 }

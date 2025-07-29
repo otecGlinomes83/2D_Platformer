@@ -1,36 +1,44 @@
-using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody2D), typeof(CapsuleCollider2D))]
+[RequireComponent(typeof(Respawner), typeof(Rotator))]
+[RequireComponent(typeof(Mover), typeof(Jumper))]
+[RequireComponent(typeof(Health))]
 public class Player : MonoBehaviour
 {
-    [SerializeField] private Mover _mover;
-    [SerializeField] private Jumper _jumper;
-    [SerializeField] private ItemCollector _itemCollector;
-    [SerializeField] private Rotator _rotator;
-    [SerializeField] private DamageAbler _damageAbler;
-    [SerializeField] private Respawner _respawner;
+   [SerializeField] private ItemCollector _itemCollector;
+
+    private Mover _mover;
+    private Jumper _jumper;
+    private Respawner _respawner;
 
     private PlayerInput _playerInput;
 
-    private List<Coin> _coins = new List<Coin>();
-
-    public bool IsAlive => _damageAbler.CurrentHealth > 0;
+    public Health Health { get; private set; }
+    public Wallet Wallet { get; private set; }
 
     private void Awake()
     {
+        _mover = GetComponent<Mover>();
+        _jumper = GetComponent<Jumper>();
+        _respawner = GetComponent<Respawner>();
+        Health = GetComponent<Health>();
+
         _playerInput = new PlayerInput();
+        Wallet = new Wallet();
+
         _respawner.Respawn();
     }
 
     private void OnEnable()
     {
-        _itemCollector.ItemCollected += ItemSorter;
+        _itemCollector.ItemCollected += UseItem;
         _playerInput.Enable();
     }
 
     private void OnDisable()
     {
-        _itemCollector.ItemCollected -= ItemSorter;
+        _itemCollector.ItemCollected -= UseItem;
         _playerInput.Disable();
     }
 
@@ -44,24 +52,6 @@ public class Player : MonoBehaviour
         _mover.Move(direction);
     }
 
-    private void ItemSorter(Item item)
-    {
-        if (item is Coin coin)
-            AddCoin(coin);
-
-        if (item is Aid aid)
-            Heal(aid);
-    }
-
-    private void AddCoin(Coin collectedCoin)
-    {
-        _coins.Add(collectedCoin);
-        Debug.Log($"Собрана монетка! Всего:{_coins.Count}");
-    }
-
-    private void Heal(Aid aid)
-    {
-        _damageAbler.Heal(aid.Health);
-        Debug.Log($"Собрана Аптечка! текущее хп:{_damageAbler.CurrentHealth}");
-    }
+    private void UseItem(Item item) =>
+        item.Use(this);
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 [RequireComponent(typeof(BoxCollider2D))]
 public class DamageAblerDetector : MonoBehaviour
 {
-    public event Action<DamageAbler> TargetDetected;
+    public event Action<Health> TargetDetected;
     public event Action TargetLost;
 
     private BoxCollider2D _detectZone;
@@ -17,13 +17,13 @@ public class DamageAblerDetector : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.TryGetComponent(out DamageAbler target))
+        if (collision.gameObject.TryGetComponent(out Health target))
             TargetDetected?.Invoke(target);
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.gameObject.TryGetComponent(out DamageAbler target))
+        if (collision.gameObject.TryGetComponent(out Health target))
             TargetLost?.Invoke();
     }
 }

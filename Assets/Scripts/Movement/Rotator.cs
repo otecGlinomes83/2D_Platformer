@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Mover))]
 public class Rotator : MonoBehaviour
 {
     [SerializeField] private Transform _model;

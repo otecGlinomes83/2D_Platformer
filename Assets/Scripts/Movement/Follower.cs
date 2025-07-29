@@ -1,41 +1,45 @@
 using UnityEngine;
 
-[RequireComponent(typeof(BoxCollider2D))]
-[RequireComponent(typeof(Mover))]
+[RequireComponent(typeof(PlayerDetector), typeof(Mover))]
 public class Follower : MonoBehaviour
 {
-    [SerializeField] private Transform _target;
+    [SerializeField] private Player _player;
 
+    private PlayerDetector _playerDetector;
     private Mover _mover;
-    private BoxCollider2D _unfollowZone;
 
     private bool _isAbleToMove = true;
 
     private void Awake()
     {
         _mover = GetComponent<Mover>();
-        _unfollowZone = GetComponent<BoxCollider2D>();
-        _unfollowZone.isTrigger = true;
+        _playerDetector = GetComponent<PlayerDetector>();
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void OnEnable()
     {
-        if (collision.TryGetComponent<Player>(out _))
-            _isAbleToMove = false;
+        _playerDetector.TargetDetected += StopMoveToPlayer;
+        _playerDetector.TargetLost += StartMoveToPlayer;
     }
 
-    private void OnTriggerExit2D(Collider2D collision)
+    private void OnDisable()
     {
-        if (collision.TryGetComponent<Player>(out _))
-            _isAbleToMove = true;
+        _playerDetector.TargetDetected -= StopMoveToPlayer;
+        _playerDetector.TargetLost -= StartMoveToPlayer;
     }
+
+    private void StopMoveToPlayer() =>
+        _isAbleToMove = false;
+
+    private void StartMoveToPlayer() =>
+        _isAbleToMove = true;
 
     private void LateUpdate()
     {
         if (_isAbleToMove)
-        {
-            Vector2 direction = _target.transform.position - transform.position;
-            _mover.Move(direction);
-        }
+            _mover.Move(GetDirection());
     }
+
+    private Vector2 GetDirection() =>
+            _player.transform.position - transform.position;
 }

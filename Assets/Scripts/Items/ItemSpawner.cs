@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 
-[RequireComponent(typeof(ItemPusher))]
+[RequireComponent(typeof(Pusher))]
 public class ItemSpawner : MonoBehaviour
 {
     [SerializeField] private Item _itemPrefab;
@@ -9,7 +9,7 @@ public class ItemSpawner : MonoBehaviour
     [SerializeField] private float _spawnRate = 5f;
     [SerializeField] private ItemCollector _itemCollector;
 
-    private ItemPusher _itemPusher;
+    private Pusher _pusher;
 
     private Coroutine _spawnCoroutine;
     private WaitForSecondsRealtime _spawnDelay;
@@ -18,7 +18,7 @@ public class ItemSpawner : MonoBehaviour
 
     private void Awake()
     {
-        _itemPusher = GetComponent<ItemPusher>();
+        _pusher = GetComponent<Pusher>();
         _spawnDelay = new WaitForSecondsRealtime(_spawnRate);
     }
 
@@ -71,7 +71,7 @@ public class ItemSpawner : MonoBehaviour
 
         _item.gameObject.SetActive(true);
         _item.transform.position = transform.position;
-        _itemPusher.Push(_item);
+        _pusher.Push(_item.Rigidbody);
     }
 
     private void DeactivateItem(Item item)

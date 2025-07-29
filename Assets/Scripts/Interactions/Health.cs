@@ -2,10 +2,9 @@ using System;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class DamageAbler : MonoBehaviour
+public class Health : MonoBehaviour
 {
     [SerializeField] private float _maxHealth = 100f;
-    [SerializeField] private Respawner _respawner;
 
     public event Action Dead;
 
@@ -19,16 +18,6 @@ public class DamageAbler : MonoBehaviour
         Rigidbody = GetComponent<Rigidbody2D>();
     }
 
-    private void OnEnable()
-    {
-        _respawner.Respawned += SetHealthDefault;
-    }
-
-    private void OnDisable()
-    {
-        _respawner.Respawned -= SetHealthDefault;
-    }
-
     public void TakeDamage(float damage)
     {
         if (CurrentHealth < damage)
@@ -40,12 +29,10 @@ public class DamageAbler : MonoBehaviour
             CurrentHealth -= damage;
         }
 
-        Debug.Log($"{gameObject.name} - Получен урон! Текущее здоровье - '{CurrentHealth}'");
-
         if (IsAlive == false)
         {
+            CurrentHealth = _maxHealth;
             Dead?.Invoke();
-            Debug.Log($"{gameObject.name} - умер!");
         }
     }
 
@@ -59,10 +46,5 @@ public class DamageAbler : MonoBehaviour
         {
             CurrentHealth += health;
         }
-
-        Debug.Log($"Получено лечение! Текущее здоровье:{CurrentHealth}");
     }
-
-    private void SetHealthDefault() =>
-        CurrentHealth = _maxHealth;
 }

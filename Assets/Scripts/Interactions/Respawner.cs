@@ -5,23 +5,23 @@ public class Respawner : MonoBehaviour
 {
     [SerializeField] private Transform _spawnPosition;
 
-    [SerializeField] private DamageAbler _damageAbler;
+    [SerializeField] private Health _health;
 
     public event Action Respawned;
 
     private void OnEnable()
     {
-        _damageAbler.Dead += Respawn;
+        _health.Dead += Respawn;
     }
 
     private void OnDisable()
     {
-        _damageAbler.Dead -= Respawn;
+        _health.Dead -= Respawn;
     }
 
     public void Respawn()
     {
-        _damageAbler.gameObject.transform.position = _spawnPosition.transform.position;
+        _health.gameObject.transform.position = _spawnPosition.transform.position;
         Respawned?.Invoke();
     }
 }

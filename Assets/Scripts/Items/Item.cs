@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(CapsuleCollider2D))]
-public class Item : MonoBehaviour
+public abstract class Item : MonoBehaviour
 {
     public Rigidbody2D Rigidbody { get; private set; }
 
@@ -9,4 +9,6 @@ public class Item : MonoBehaviour
     {
         Rigidbody = GetComponent<Rigidbody2D>();
     }
+
+    public abstract void Use(Player player);
 }

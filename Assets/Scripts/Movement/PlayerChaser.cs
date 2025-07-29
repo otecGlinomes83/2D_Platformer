@@ -5,6 +5,8 @@ using UnityEngine;
 [RequireComponent(typeof(Jumper))]
 public class PlayerChaser : MonoBehaviour
 {
+    [SerializeField] private Player _player;
+
     [SerializeField] private float _jumpThreshold = 2f;
 
     private Mover _mover;
@@ -18,10 +20,10 @@ public class PlayerChaser : MonoBehaviour
         _jumper = GetComponent<Jumper>();
     }
 
-    public void TryStartChase(Player player)
+    public void TryStartChase()
     {
         if (_chaseCoroutine == null)
-            _chaseCoroutine = StartCoroutine(ChasePlayer(player));
+            _chaseCoroutine = StartCoroutine(ChasePlayer());
     }
 
     public void TryStopChase()
@@ -33,22 +35,22 @@ public class PlayerChaser : MonoBehaviour
         }
     }
 
-    private IEnumerator ChasePlayer(Player player)
+    private IEnumerator ChasePlayer()
     {
         while (enabled)
         {
-            if (player.IsAlive == false)
+            if (_player.Health.IsAlive == false)
                 TryStopChase();
 
-            _mover.Move(new Vector2(GetDirection(player).x, 0f));
+            _mover.Move(GetDirectionX(_player));
 
-            if (player.transform.position.y > (transform.position.y + _jumpThreshold))
+            if (_player.transform.position.y > (transform.position.y + _jumpThreshold))
                 _jumper.Jump();
 
             yield return null;
         }
     }
 
-    private Vector2 GetDirection(Player player) =>
-        (player.transform.position - transform.position);
+    private Vector2 GetDirectionX(Player player) =>
+      new Vector2(player.transform.position.x - transform.position.x, 0f);
 }
