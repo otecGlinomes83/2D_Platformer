@@ -1,24 +1,22 @@
 using System;
 using UnityEngine;
 
-[RequireComponent(typeof(BoxCollider2D))]
-public class DamageAblerDetector : MonoBehaviour
+public class GenericDetector<T> : MonoBehaviour where T : Component
 {
-    public event Action<Health> TargetDetected;
+    public event Action<T> TargetDetected;
     public event Action TargetLost;
 
-    private BoxCollider2D _detectZone;
+    [SerializeField] private Collider2D _detectZone;
 
     private void Awake()
     {
-        _detectZone = GetComponent<BoxCollider2D>();
         _detectZone.isTrigger = true;
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.TryGetComponent(out Health target))
-            TargetDetected?.Invoke(target);
+        if (collision.gameObject.TryGetComponent<T>(out var T))
+            TargetDetected?.Invoke(T);
     }
 
     private void OnTriggerExit2D(Collider2D collision)

@@ -6,7 +6,8 @@ public class Rotator : MonoBehaviour
     [SerializeField] private Transform _model;
     [SerializeField] private Mover _mover;
 
-    private bool _isLookingLeft = false;
+    private Quaternion _rightRotation = Quaternion.Euler(0f, 0f, 0f);
+    private Quaternion _leftRotation = Quaternion.Euler(0f, 180f, 0f);
 
     private float _directionArrivalThreshold = 0.01f;
 
@@ -23,30 +24,9 @@ public class Rotator : MonoBehaviour
     private void Rotate(Vector2 direction)
     {
         if (Mathf.Abs(direction.x) < _directionArrivalThreshold)
-        {
-            RotateRight();
-            _isLookingLeft = false;
             return;
-        }
 
-        if (direction.x > _directionArrivalThreshold)
-        {
-            RotateRight();
-            _isLookingLeft = false;
-        }
-        else
-        {
-            if (_isLookingLeft)
-                return;
-
-            RotateLeft();
-            _isLookingLeft = true;
-        }
+        bool isShouldLookLeft = direction.x < -_directionArrivalThreshold;
+        _model.rotation = isShouldLookLeft ? _leftRotation : _rightRotation;
     }
-
-    private void RotateRight() =>
-        _model.rotation = Quaternion.Euler(0f, 0f, 0f);
-
-    private void RotateLeft() =>
-        _model.rotation = Quaternion.Euler(0f, 180f, 0f);
 }

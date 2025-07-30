@@ -28,7 +28,7 @@ public class Follower : MonoBehaviour
         _playerDetector.TargetLost -= StartMoveToPlayer;
     }
 
-    private void StopMoveToPlayer() =>
+    private void StopMoveToPlayer(Player player) =>
         _isAbleToMove = false;
 
     private void StartMoveToPlayer() =>

@@ -6,7 +6,7 @@ using UnityEngine;
 [RequireComponent(typeof(Rotator))]
 public class Enemy : MonoBehaviour
 {
-   [SerializeField] private PlayerDetector _playerDetector;
+    [SerializeField] private PlayerDetector _playerDetector;
 
     private Patroller _patroller;
     private PlayerChaser _playerChaser;
@@ -35,7 +35,7 @@ public class Enemy : MonoBehaviour
         _playerDetector.TargetLost -= StartPatrolling;
     }
 
-    private void StartChase()
+    private void StartChase(Player player)
     {
         _patroller.TryStopPatrolling();
         _playerChaser.TryStartChase();
