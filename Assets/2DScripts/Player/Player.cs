@@ -26,9 +26,9 @@ public class Player : MonoBehaviour
         _jumper = GetComponent<Jumper>();
         _respawner = GetComponent<Respawner>();
         Health = GetComponent<Health>();
+        Wallet = GetComponent<Wallet>();
 
         _playerInput = new PlayerInput();
-        Wallet = new Wallet();
 
         _respawner.Respawn();
     }

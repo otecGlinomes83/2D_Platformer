@@ -1,10 +1,14 @@
-public class Wallet
+using R3;
+using UnityEngine;
+
+public class Wallet:MonoBehaviour
 {
-    public int CoinsCount { get; private set; } = 0;
+    private ReactiveProperty<int> _coinsCount = new ReactiveProperty<int>();
+    public ReadOnlyReactiveProperty<int> CoinsCount => _coinsCount.ToReadOnlyReactiveProperty();
 
     public void AddCoins(int count)
     {
         if (count > 0)
-            CoinsCount += count;
+            _coinsCount.Value += count;
     }
 }

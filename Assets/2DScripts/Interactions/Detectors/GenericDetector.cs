@@ -21,7 +21,7 @@ public class GenericDetector<T> : MonoBehaviour where T : Component
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        if (collision.gameObject.TryGetComponent(out Health target))
+        if (collision.gameObject.TryGetComponent<T>(out var T))
             TargetLost?.Invoke();
     }
 }
