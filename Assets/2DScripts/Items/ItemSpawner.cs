@@ -7,10 +7,8 @@ public class ItemSpawner : MonoBehaviour
     [SerializeField] private Item _itemPrefab;
 
     [SerializeField] private float _spawnRate = 5f;
-    [SerializeField] private ItemCollector _itemCollector;
 
     private Pusher _pusher;
-
     private Item _item;
 
     private void Awake()
@@ -23,23 +21,15 @@ public class ItemSpawner : MonoBehaviour
         SpawnItem();
     }
 
-    private void OnEnable()
-    {
-        _itemCollector.ItemCollected += DeactivateItem;
-    }
-
     private void OnDisable()
     {
-        _itemCollector.ItemCollected -= DeactivateItem;
+        _item.Collected -= DeactivateItem;
     }
 
     private void DeactivateItem(Item item)
     {
-        if (_item == item)
-        {
-            _item.gameObject.SetActive(false);
-            StartCoroutine(RespawnDelayed());
-        }
+        _item.gameObject.SetActive(false);
+        StartCoroutine(RespawnDelayed());
     }
 
     private IEnumerator RespawnDelayed()
@@ -47,7 +37,9 @@ public class ItemSpawner : MonoBehaviour
         WaitForSecondsRealtime delay = new WaitForSecondsRealtime(_spawnRate);
 
         yield return delay;
+
         SpawnItem();
+
         yield break;
     }
 
@@ -56,6 +48,7 @@ public class ItemSpawner : MonoBehaviour
         if (_item == null)
         {
             _item = Instantiate(_itemPrefab, transform);
+            _item.Collected += DeactivateItem;
         }
 
         _item.gameObject.SetActive(true);

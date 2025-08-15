@@ -9,7 +9,6 @@ namespace Assets._2DScripts.Interactions
         [SerializeField] private float _attackCooldown = 1f;
 
         private HealthDetector _healthDetector;
-        private Health _targetHealth;
 
         private Attacker _attacker;
         private Coroutine _attackCoroutine;
@@ -35,12 +34,10 @@ namespace Assets._2DScripts.Interactions
             TryStopAttack();
         }
 
-        private void TryStartAttack(Health target)
+        private void TryStartAttack(Health targetHealth)
         {
             TryStopAttack();
-
-            _targetHealth = target;
-            _attackCoroutine = StartCoroutine(AttackPerCooldown());
+            _attackCoroutine = StartCoroutine(AttackPerCooldown(targetHealth));
         }
 
         private void TryStopAttack()
@@ -50,18 +47,18 @@ namespace Assets._2DScripts.Interactions
 
             StopCoroutine(_attackCoroutine);
             _attackCoroutine = null;
-            _targetHealth = null;
+            _cooldown.Reset();
         }
 
-        private IEnumerator AttackPerCooldown()
+        private IEnumerator AttackPerCooldown(Health targetHealth)
         {
-            while (_targetHealth != null)
+            while (enabled)
             {
                 yield return _cooldown;
 
-                if (_targetHealth != null)
+                if (targetHealth != null)
                 {
-                    _attacker.Impact(_targetHealth);
+                    _attacker.Impact(targetHealth);
                 }
                 else
                 {

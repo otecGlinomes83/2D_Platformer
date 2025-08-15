@@ -23,6 +23,7 @@ public class ItemCollector : MonoBehaviour
         if (collision.gameObject.TryGetComponent(out Item item))
         {
             ItemCollected?.Invoke(item);
+            item.Collect();
         }
     }
 }
