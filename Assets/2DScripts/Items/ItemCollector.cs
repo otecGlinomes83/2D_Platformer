@@ -1,4 +1,4 @@
-using R3;
+using System;
 using UnityEngine;
 
 [RequireComponent(typeof(CircleCollider2D))]
@@ -8,9 +8,7 @@ public class ItemCollector : MonoBehaviour
 
     private CircleCollider2D _collectZone;
 
-    private Subject<Item> _itemCollected = new Subject<Item>();
-
-    public Observable<Item> ItemCollected => _itemCollected;
+    public event Action<Item> ItemCollected;
 
     private void Awake()
     {
@@ -24,7 +22,7 @@ public class ItemCollector : MonoBehaviour
     {
         if (collision.gameObject.TryGetComponent(out Item item))
         {
-            _itemCollected.OnNext(item);
+            ItemCollected?.Invoke(item);
         }
     }
 }

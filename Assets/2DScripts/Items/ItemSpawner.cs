@@ -1,4 +1,4 @@
-using R3;
+using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(Pusher))]
@@ -10,9 +10,8 @@ public class ItemSpawner : MonoBehaviour
     [SerializeField] private ItemCollector _itemCollector;
 
     private Pusher _pusher;
-    private Item _item;
 
-    private CompositeDisposable _disposables = new CompositeDisposable();
+    private Item _item;
 
     private void Awake()
     {
@@ -21,21 +20,35 @@ public class ItemSpawner : MonoBehaviour
 
     private void Start()
     {
-        _itemCollector.ItemCollected
-    .Where(item => item == _item)
-    .Subscribe(item =>
-    {
-        item.gameObject.SetActive(false);
-        Invoke(nameof(SpawnItem), _spawnRate);
-    })
-    .AddTo(_disposables);
-
         SpawnItem();
+    }
+
+    private void OnEnable()
+    {
+        _itemCollector.ItemCollected += DeactivateItem;
     }
 
     private void OnDisable()
     {
-        _disposables.Dispose();
+        _itemCollector.ItemCollected -= DeactivateItem;
+    }
+
+    private void DeactivateItem(Item item)
+    {
+        if (_item == item)
+        {
+            _item.gameObject.SetActive(false);
+            StartCoroutine(RespawnDelayed());
+        }
+    }
+
+    private IEnumerator RespawnDelayed()
+    {
+        WaitForSecondsRealtime delay = new WaitForSecondsRealtime(_spawnRate);
+
+        yield return delay;
+        SpawnItem();
+        yield break;
     }
 
     private void SpawnItem()

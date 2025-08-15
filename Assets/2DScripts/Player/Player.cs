@@ -8,14 +8,13 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     [SerializeField] private ItemCollector _itemCollector;
+    [SerializeField] private VampirismAbility _vampirismAbility;
 
     private Mover _mover;
     private Jumper _jumper;
     private Respawner _respawner;
 
     private PlayerInput _playerInput;
-
-    private CompositeDisposable _disposables = new CompositeDisposable();
 
     public Health Health { get; private set; }
     public Wallet Wallet { get; private set; }
@@ -35,13 +34,13 @@ public class Player : MonoBehaviour
 
     private void OnEnable()
     {
-        _itemCollector.ItemCollected.Subscribe(item => item.Use(this)).AddTo(_disposables);
+        _itemCollector.ItemCollected += UseItem;
         _playerInput.Enable();
     }
 
     private void OnDisable()
     {
-        _disposables.Dispose();
+        _itemCollector.ItemCollected -= UseItem;
         _playerInput.Disable();
     }
 
@@ -53,5 +52,10 @@ public class Player : MonoBehaviour
         Vector2 direction = new Vector2(_playerInput.Player.Move.ReadValue<float>(), 0);
 
         _mover.Move(direction);
+
+        if (_playerInput.Player.Attack.triggered)
+            _vampirismAbility.TryStartWork();
     }
+
+    private void UseItem(Item item) => item.Use(this);
 }

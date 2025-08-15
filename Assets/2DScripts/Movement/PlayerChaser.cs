@@ -20,6 +20,16 @@ public class PlayerChaser : MonoBehaviour
         _jumper = GetComponent<Jumper>();
     }
 
+    private void OnEnable()
+    {
+        _player.Health.Dead += TryStopChase;
+    }
+
+    private void OnDisable()
+    {
+        _player.Health.Dead -= TryStopChase;
+    }
+
     public void TryStartChase()
     {
         if (_chaseCoroutine == null)
@@ -39,9 +49,6 @@ public class PlayerChaser : MonoBehaviour
     {
         while (enabled)
         {
-            if (_player.Health.IsAlive.CurrentValue == false)
-                TryStopChase();
-
             _mover.Move(GetDirectionX(_player));
 
             if (_player.transform.position.y > (transform.position.y + _jumpThreshold))

@@ -1,58 +1,39 @@
-using R3;
 using System;
 using UnityEngine;
 
-public class Health : MonoBehaviour
+public class Health : MonoBehaviour, IChangeObservable
 {
     [SerializeField] private float _maxHealth = 100f;
 
+    public event Action<float, float> ValueChanged;
     public event Action Dead;
 
-    public ReadOnlyReactiveProperty<bool> IsAlive;
-    public ReadOnlyReactiveProperty<float> PublicCurrentHealth => CurrentHealth;
-    public ReadOnlyReactiveProperty<float> PublicMaxHealth => MaxHealth;
+    private float _currentHealth;
 
-    private ReactiveProperty<float> CurrentHealth;
-    private ReactiveProperty<float> MaxHealth;
+    public bool IsAlive => _currentHealth > 0f;
 
-    private void Awake()
+    private void Start()
     {
-        MaxHealth = new ReactiveProperty<float>(_maxHealth);
-        CurrentHealth = new ReactiveProperty<float>(_maxHealth);
-
-        IsAlive = CurrentHealth.Select(health => health > 0).ToReadOnlyReactiveProperty();
+        _currentHealth = _maxHealth;
+        ValueChanged?.Invoke(_currentHealth, _maxHealth);
     }
 
     public void TakeDamage(float damage)
     {
-        if (damage <= 0)
-            return;
+        _currentHealth = Mathf.Max(_currentHealth - Mathf.Max(damage, 0f), 0f);
 
-        if (CurrentHealth.Value < damage)
-        {
-            CurrentHealth.Value = 0f;
-        }
-        else
-        {
-            CurrentHealth.Value -= damage;
-        }
-
-        if (IsAlive.CurrentValue == false)
+        if (IsAlive == false)
         {
             Dead?.Invoke();
-            CurrentHealth.Value = _maxHealth;
+            _currentHealth = _maxHealth;
         }
+
+        ValueChanged?.Invoke(_currentHealth, _maxHealth);
     }
 
     public void Heal(float health)
     {
-        if (health + CurrentHealth.Value > _maxHealth)
-        {
-            CurrentHealth.Value = _maxHealth;
-        }
-        else
-        {
-            CurrentHealth.Value += health;
-        }
+        _currentHealth = Mathf.Min(_maxHealth, health + _currentHealth);
+        ValueChanged?.Invoke(_currentHealth, _maxHealth);
     }
 }
